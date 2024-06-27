@@ -57,34 +57,34 @@ export async function POST(req: NextRequest) {
 }
 
 
-export async function DELETE(req: NextRequest) {
-  try {
-    await connectToDatabase();
+// export async function DELETE(req: NextRequest) {
+//   try {
+//     await connectToDatabase();
 
-    const { userId, transactionId } = await req.json();
+//     const { userId, transactionId } = await req.json();
 
-    let user = await UserModel.findById(userId);
+//     let user = await UserModel.findById(userId);
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' });
-    }
+//     if (!user) {
+//       return NextResponse.json({ error: 'User not found' });
+//     }
 
-    const transactionIndex = user.transactions.findIndex(
-      (transaction) => transaction._id.toString() === transactionId
-    );
+//     const transactionIndex = user.transactions.findIndex(
+//       (transaction) => transaction._id.toString() === transactionId
+//     );
 
-    if (transactionIndex === -1) {
-      return NextResponse.json({ error: 'Transaction not found' });
-    }
+//     if (transactionIndex === -1) {
+//       return NextResponse.json({ error: 'Transaction not found' });
+//     }
 
-    user.transactions.splice(transactionIndex, 1);
+//     user.transactions.splice(transactionIndex, 1);
 
-    await user.save();
+//     await user.save();
 
-    return NextResponse.json(user);
-  } catch (error) {
-    console.error('Error deleting transaction:', error);
-    return NextResponse.json({ error: 'Failed to delete transaction' });
-  }
-}
+//     return NextResponse.json(user);
+//   } catch (error) {
+//     console.error('Error deleting transaction:', error);
+//     return NextResponse.json({ error: 'Failed to delete transaction' });
+//   }
+// }
 
