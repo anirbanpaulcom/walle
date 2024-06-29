@@ -1,5 +1,11 @@
 import React from 'react';
-import {Text, StyleProp, TextStyle, useColorScheme} from 'react-native';
+import {
+  Text,
+  StyleProp,
+  TextStyle,
+  useColorScheme,
+  StyleSheet,
+} from 'react-native';
 import {sharedColors} from '../../constains/colors';
 
 interface ICustomTextProps {
@@ -23,8 +29,6 @@ const TextView = ({
   style,
   children,
 }: ICustomTextProps): React.ReactElement => {
-  const textStyles = getStyles(type);
-
   const isDarkMode = useColorScheme() === 'dark';
 
   const colorMode = {
@@ -34,62 +38,50 @@ const TextView = ({
   };
 
   return (
-    <Text
-      style={[
-        textStyles.base,
-        colorMode,
-        textStyles[type],
-        {textAlign},
-        style,
-      ]}>
+    <Text style={[styles.base, styles[type], colorMode, {textAlign}, style]}>
       {children}
     </Text>
   );
 };
 
-const getStyles = (type: string) => {
-  const base = {
+const styles = StyleSheet.create({
+  base: {
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '600' as '600',
     width: '100%',
-  };
-
-  const styles = {
-    largeBold: {
-      fontSize: 30,
-      fontWeight: '800',
-    },
-    largeLight: {
-      fontSize: 30,
-      fontWeight: '400',
-    },
-    mediumBold: {
-      fontSize: 20,
-      fontWeight: '900',
-    },
-    mediumLight: {
-      fontSize: 20,
-      fontWeight: '300',
-    },
-    smallBold: {
-      fontSize: 15,
-      fontWeight: '800',
-    },
-    smallLight: {
-      fontSize: 15,
-      fontWeight: '300',
-    },
-    extraSmallBold: {
-      fontSize: 10,
-      fontWeight: '500',
-    },
-    extraSmallLight: {
-      fontSize: 10,
-      fontWeight: '300',
-    },
-  };
-
-  return {base, ...styles};
-};
+  },
+  largeBold: {
+    fontSize: 30,
+    fontWeight: '800' as '800',
+  },
+  largeLight: {
+    fontSize: 30,
+    fontWeight: '400' as '400',
+  },
+  mediumBold: {
+    fontSize: 20,
+    fontWeight: '900' as '900',
+  },
+  mediumLight: {
+    fontSize: 20,
+    fontWeight: '300' as '300',
+  },
+  smallBold: {
+    fontSize: 15,
+    fontWeight: '800' as '800',
+  },
+  smallLight: {
+    fontSize: 15,
+    fontWeight: '300' as '300',
+  },
+  extraSmallBold: {
+    fontSize: 10,
+    fontWeight: '500' as '500',
+  },
+  extraSmallLight: {
+    fontSize: 10,
+    fontWeight: '300' as '300',
+  },
+});
 
 export default TextView;

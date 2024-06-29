@@ -1,29 +1,41 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   useColorScheme,
 } from 'react-native';
+import {useDispatch} from 'react-redux';
 import {sharedColors} from '../../constains/colors';
 import {sharedStyles} from '../../constains/styles';
 import Container from '../../components/Wrapper/Container';
 import Input from '../../components/InputView/Input';
-import LineOr from '../../components/LineView/LineView';
 import ButtonView from '../../components/ButtonView/buttonView';
+import {fetcher} from '../../api/api';
+import {setUser} from '../../redux/slices/userSlice';
+import {setLoggedIn} from '../../redux/slices/authSlice';
 
 const LoginScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
+  const [number, setNumber] = useState('');
+  const dispatch = useDispatch();
+
+  const handleLogin = async () => {
+    try {
+      const user = await fetcher('POST', '/user', {number});
+      if (user) {
+        dispatch(setUser(user));
+        dispatch(setLoggedIn(true));
+      }
+    } catch (error) {
+      console.error('Login Failed');
+    }
+  };
 
   const colorMode = {
-    backgroundColor: isDarkMode
-      ? sharedColors.lightMode.backgroundColor
-      : sharedColors.darkMode.backgroundColor,
-    textColor: isDarkMode
-      ? sharedColors.lightMode.textColor
-      : sharedColors.darkMode.textColor,
+    backgroundColor: sharedColors.lightMode.backgroundColor,
+    textColor: sharedColors.lightMode.textColor,
   };
 
   return (
@@ -32,46 +44,21 @@ const LoginScreen = () => {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={colorMode.backgroundColor}
       />
-      <Container width="85%">
-        <Container
-          height="15%"
-          justifyContent="flex-end"
-          alignItems="flex-start">
+      <Container>
+        <Container alignItems="flex-start">
           <Text style={[{color: colorMode.textColor}, sharedStyles.largeText]}>
-            Create an account
+            Login
           </Text>
           <Text style={[{color: colorMode.textColor}, sharedStyles.mediumText]}>
-            Create your account,it takes less than a minite, Enter your email
-            and password.
+            Enter Your number to proceed
           </Text>
         </Container>
-        <Container height="30%">
-          <Input placeholder="Email" />
-          <Input placeholder="Password" />
-          <ButtonView title="Create an Account" type="green" />
-        </Container>
-        <Container height="55%" justifyContent="flex-start">
-          <LineOr />
-          <ButtonView title="Continue With Phone Number" />
-          <ButtonView title="Continue With Google" />
-          <ButtonView title="Continue With Facebook" />
-          <ButtonView title="Continue With Apple" />
-          <Container height="15%" style={styles.row}>
-            <Text
-              style={[{color: colorMode.textColor}, sharedStyles.mediumText]}>
-              Already have an account?
-            </Text>
-            <TouchableOpacity>
-              <Text
-                style={[
-                  {color: sharedColors.greenishYellow},
-                  sharedStyles.mediumText,
-                ]}>
-                Login
-              </Text>
-            </TouchableOpacity>
-          </Container>
-        </Container>
+        <Input
+          placeholder="Enter number"
+          value={number}
+          onChangeText={setNumber}
+        />
+        <ButtonView title="Continue" onPress={handleLogin} />
       </Container>
     </SafeAreaView>
   );
@@ -80,8 +67,9 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    padding: 15,
   },
   row: {
     flexDirection: 'row',

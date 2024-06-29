@@ -1,20 +1,10 @@
 import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import ButtonView from '../ButtonView/buttonView';
-import DottedBorder from '../LineView/DottedView';
 import TextView from '../TextView/TextView';
 import Icons from '../../assets/icons/icons';
 
 const FileUploaderView = () => {
   const [file, setFile] = useState(null);
-
-  const handleOptionClick = option => {
-    setFile(null);
-  };
-
-  const handleSubmit = () => {
-    console.log('Selected File:', file);
-  };
 
   const DocumentPicker = '';
 

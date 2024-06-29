@@ -8,40 +8,7 @@ import {
 } from 'react-native';
 import TextView from '../TextView/TextView';
 
-const HorizontalFlatList = () => {
-  const data = [
-    {
-      key: '1',
-      imageUri:
-        'https://image.pixstory.com/optimized/Pixstory-image-164561888485065.png',
-      title: 'Science',
-    },
-    {
-      key: '2',
-      imageUri:
-        'https://images.squarespace-cdn.com/content/v1/53b6eb62e4b06e0feb2d8e86/1594942678203-T2DZHNP3HW0BDATHQB5Z/SamSpratt_NoPressure_Cover_Final+copy.jpg?format=2500w',
-      title: 'Technology',
-    },
-    {
-      key: '3',
-      imageUri:
-        'https://image.pixstory.com/optimized/Pixstory-image-164561888485065.png',
-      title: 'Art',
-    },
-    {
-      key: '4',
-      imageUri:
-        'https://pics.craiyon.com/2023-06-01/ca49f7574c9e4fccb6174f524663ad18.webp',
-      title: 'Music',
-    },
-    {
-      key: '5',
-      imageUri:
-        'https://pics.craiyon.com/2023-06-01/ca49f7574c9e4fccb6174f524663ad18.webp',
-      title: 'songs',
-    },
-  ];
-
+const HorizontalFlatList = () => 
   const renderItem = ({item}) => (
     <TouchableOpacity style={styles.itemContainer}>
       <View style={styles.imageContainer}>

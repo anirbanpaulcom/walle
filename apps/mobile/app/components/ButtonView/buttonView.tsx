@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {sharedColors} from '../../constains/colors';
 
-interface IButtonProps extends TouchableOpacityProps {
+interface ButtonViewProps extends TouchableOpacityProps {
   title: string;
   onPress: () => void;
   type?: string;
@@ -34,7 +34,7 @@ const ButtonView = ({
   styleText,
   style,
   ...otherProps
-}: IButtonProps): React.ReactElement => {
+}: ButtonViewProps): React.ReactElement => {
   const isblack = type === 'black';
 
   let textColor = isblack ? '#FFFFFF' : '#000000';

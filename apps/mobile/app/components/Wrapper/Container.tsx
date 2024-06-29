@@ -1,6 +1,5 @@
 import React from 'react';
-
-import {View} from 'react-native';
+import {View, ViewProps, ViewStyle} from 'react-native';
 
 type justifyContentType =
   | 'center'
@@ -17,13 +16,12 @@ type AlignItemsType =
   | 'stretch'
   | 'baseline';
 
-export interface ContainerProps {
+export interface ContainerProps extends ViewProps {
   children: React.ReactNode;
   alignItems?: AlignItemsType;
   justifyContent?: justifyContentType;
   height?: number | string;
   width?: number | string;
-  style?: object;
   backgroundColor?: string;
 }
 
@@ -35,13 +33,21 @@ const Container = ({
   alignItems = 'center',
   width = '100%',
   height = 'auto',
+  ...restProps
 }: ContainerProps) => {
   return (
     <View
       style={[
-        {backgroundColor, justifyContent, alignItems, width, height},
+        {
+          backgroundColor,
+          justifyContent,
+          alignItems,
+          width: width as ViewStyle['width'],
+          height: height as ViewStyle['height'],
+        },
         style,
-      ]}>
+      ]}
+      {...restProps}>
       {children}
     </View>
   );

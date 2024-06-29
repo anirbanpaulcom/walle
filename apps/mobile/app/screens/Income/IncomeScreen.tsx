@@ -1,17 +1,30 @@
 import React from 'react';
-import {useColorScheme, StatusBar, View, Text, ScrollView} from 'react-native';
+import {
+  useColorScheme,
+  StatusBar,
+  Text,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {sharedColors} from '../../constains/colors';
-import {StyleSheet} from 'react-native';
 import BoxView from '../../components/BoxView/BoxView';
 import ModalComponent from '../../components/ModalView/ModelView';
-import {
-  balanceCategories,
-} from '../../constains/catagories';
+import {Category} from '../../constains/catagories';
+import Container from '../../components/Wrapper/Container';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../redux/store';
+import {getColor} from '../../functions/functions';
 
 const IncomeScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  const [modalVisible, setModalVisible] = React.useState(true);
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [item, setItem] = React.useState<Category | undefined>(undefined);
+  const user = useSelector((state: RootState) => state.user);
+  const totalBalance = user.balance.reduce(
+    (sum, category) => sum + category.amount,
+    0,
+  );
 
   const colorMode = {
     backgroundColor: isDarkMode
@@ -22,47 +35,28 @@ const IncomeScreen = () => {
       : sharedColors.darkMode.textColor,
   };
 
+  const handcategoryPress = (selectedItem: Category) => {
+    setModalVisible(true);
+    setItem(selectedItem);
+  };
   return (
-    <SafeAreaView style={[styles.container]}>
+    <SafeAreaView style={styles.safeArea}>
       <StatusBar
         barStyle={isDarkMode ? 'dark-content' : 'light-content'}
         backgroundColor={colorMode.backgroundColor}
       />
-      <View
-        style={{
-          color: 'black',
-          backgroundColor: '#ffffff',
-          display: 'flex',
-          alignItems: 'center',
-          marginBottom: 60,
-        }}>
-        <Text>Total Balance</Text>
-        <Text
-          style={{
-            fontSize: 50,
-            color: 'black',
-            fontWeight: '700',
-            textAlign: 'center',
-          }}>
-          <Text
-            style={{
-              fontSize: 40,
-              color: 'gray',
-              fontWeight: '300',
-            }}>
-            $
-          </Text>
-          32000
+      <Container style={styles.totalBalanceContainer}>
+        <Text style={styles.totalBalanceLabel}>Total Balance</Text>
+        <Text style={styles.totalBalanceAmount}>
+          <Text style={styles.currencySymbol}>$</Text> {totalBalance}
         </Text>
-      </View>
-      <ScrollView
-        contentContainerStyle={{display: 'flex', flexWrap: 'wrap',justifyContent:'center', flexDirection:'row'}}
-        >
-        {balanceCategories.map(category => (
+      </Container>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {user.balance.map(category => (
           <BoxView
             key={category.type}
-            color={category.color}
-            onPress={() => setModalVisible(true)}
+            color={getColor(category.type)}
+            onPress={() => handcategoryPress(category)}
             size={'lg'}
             type={category.type}
             amount={category.amount}
@@ -72,38 +66,46 @@ const IncomeScreen = () => {
       <ModalComponent
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+        type={'income'}
+        method={item?.type}
+        category={'salary'}
       />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 5,
-    color: 'black',
     backgroundColor: '#ffffff',
-    marginBottom: '10%',
   },
-  contentContainer: {
-    alignItems: 'center',
+  totalBalanceContainer: {
+    backgroundColor: '#ffffff',
+    justifyContent: 'flex-end',
+    marginBottom: 60,
+    height: '33%',
+  },
+  totalBalanceLabel: {
+    color: 'black',
+    textAlign: 'center',
+  },
+  totalBalanceAmount: {
+    fontSize: 50,
+    color: 'black',
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  currencySymbol: {
+    fontSize: 40,
+    color: 'gray',
+    fontWeight: '300',
+  },
+  scrollViewContent: {
+    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
-  },
-  image: {
-    width: 120,
-    height: 120,
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  flatList: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: 'red',
-  },
-  title: {
-    marginTop: 10,
+    flexWrap: 'wrap',
+    marginBottom: 600,
   },
 });
 

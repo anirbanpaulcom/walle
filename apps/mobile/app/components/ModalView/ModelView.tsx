@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, {useState, useEffect} from 'react';
 import {
   Modal,
@@ -11,16 +12,55 @@ import {
 } from 'react-native';
 import Row from '../Wrapper/Row';
 import ButtonView from '../ButtonView/buttonView';
+import Container from '../Wrapper/Container';
+import {fetcher} from '../../api/api';
+import {setUser} from '../../redux/slices/userSlice';
+import {useDispatch} from 'react-redux';
+import {getColor} from '../../functions/functions';
 
 interface ModalComponentProps {
+  type: string;
+  method?: string;
+  category: string;
   visible: boolean;
   onClose: () => void;
 }
 
-const ModalComponent: React.FC<ModalComponentProps> = ({visible, onClose}) => {
-  const [inputValue, setInputValue] = useState(0);
+const ModalComponent: React.FC<ModalComponentProps> = ({
+  visible,
+  onClose,
+  type,
+  method,
+  category,
+}) => {
+  const [amount, setAmount] = useState(0);
   const slideAnim = useState(new Animated.Value(0))[0];
-  const [selectedType, setSelectedType] = useState('Cash');
+  const dispatch = useDispatch();
+
+  const transaction = async (
+    type: string,
+    category: string,
+    method?: string,
+    amount: number,
+  ) => {
+    if (amount <= 0) {
+      return;
+    }
+    try {
+      const user = await fetcher('POST', '/transaction', {
+        type,
+        category,
+        method,
+        amount,
+      });
+      if (user) {
+        dispatch(setUser(user));
+        onClose();
+      }
+    } catch (error) {
+      console.error('Transaction failed', error);
+    }
+  };
 
   useEffect(() => {
     if (visible) {
@@ -36,21 +76,25 @@ const ModalComponent: React.FC<ModalComponentProps> = ({visible, onClose}) => {
         duration: 300,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start(() => setInputValue('')); // Reset input value on close
+      }).start(() => setAmount(0));
     }
   }, [slideAnim, visible]);
 
   const slideIn = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [1000, 0], // Slide from bottom to top
+    outputRange: [1000, 0],
   });
 
   const handleNumberPress = (num: string) => {
-    setInputValue(inputValue + num);
+    setAmount(prev => parseFloat(`${prev}${num}`));
   };
 
   const handleBackspace = () => {
-    setInputValue(inputValue.slice(0, -1));
+    setAmount(prev => parseFloat(prev.toString().slice(0, -1)) || 0);
+  };
+
+  const handleTransaction = () => {
+    transaction(type, category, method, amount);
   };
 
   return (
@@ -69,45 +113,27 @@ const ModalComponent: React.FC<ModalComponentProps> = ({visible, onClose}) => {
               styles.modalContainer,
               {transform: [{translateY: slideIn}]},
             ]}>
-            <View
-              style={{
-                height: '30%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <View
-                style={{
-                  paddingHorizontal: 20,
-                  paddingVertical: 4,
-                  backgroundColor: 'gray',
-                  borderRadius: 10,
-                }}></View>
-              <Row style={{justifyContent: 'center', gap: 5}}>
+            <Container style={styles.container}>
+              <View style={styles.separator} />
+              <Row>
                 <ButtonView
-                  style={{width: '45%'}}
-                  title="Cash"
-                  type={selectedType === 'Cash' ? 'black' : 'gray'}
-                  onPress={() => setSelectedType('Cash')}
+                  style={styles.button}
+                  title={method}
+                  backgroundColor={getColor(method)}
+                  color="black"
                 />
                 <ButtonView
-                  style={{width: '45%'}}
-                  title="Bank"
-                  type={selectedType === 'Bank' ? 'black' : 'gray'}
-                  onPress={() => setSelectedType('Bank')}
+                  style={styles.button}
+                  title={category}
+                  backgroundColor={getColor(category)}
+                  color="black"
                 />
               </Row>
-              <Text>Expense</Text>
-              <Text style={styles.input}>${inputValue}</Text>
-            </View>
+              <Text>{type}</Text>
+              <Text style={styles.input}>${amount}</Text>
+            </Container>
             <View style={styles.keypad}>
-              <View
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  flexDirection: 'row',
-                }}>
+              <View style={styles.keypadRow}>
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0, '.', '$'].map(num => (
                   <TouchableOpacity
                     key={num}
@@ -120,10 +146,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({visible, onClose}) => {
               <TouchableOpacity style={styles.key} onPress={handleBackspace}>
                 <Text style={styles.keyText}>⌫</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.key} onPress={handleBackspace}>
-                <Text style={styles.keyText}>⌫</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.done} onPress={onClose}>
+              <TouchableOpacity style={styles.done} onPress={handleTransaction}>
                 <Text style={styles.keyText}>✔</Text>
               </TouchableOpacity>
             </View>
@@ -150,6 +173,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  container: {
+    height: '30%',
+  },
+  separator: {
+    paddingHorizontal: 20,
+    paddingVertical: 4,
+    backgroundColor: 'gray',
+    borderRadius: 10,
+  },
+  button: {
+    width: '45%',
+  },
   input: {
     fontSize: 32,
   },
@@ -157,6 +192,13 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     height: '75%',
+  },
+  keypadRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    flexDirection: 'row',
   },
   key: {
     width: 90,
@@ -170,7 +212,7 @@ const styles = StyleSheet.create({
   },
   done: {
     width: 90,
-    height: 180,
+    height: 270,
     margin: 2,
     padding: 10,
     justifyContent: 'center',

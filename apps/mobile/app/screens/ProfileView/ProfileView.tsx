@@ -1,29 +1,20 @@
 import React, {useState} from 'react';
-import {
-  useColorScheme,
-  StatusBar,
-  Image,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import {useColorScheme, StatusBar, Image} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {sharedColors} from '../../constains/colors';
 import {StyleSheet} from 'react-native';
 import Container from '../../components/Wrapper/Container';
 import TextView from '../../components/TextView/TextView';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../redux/store';
 
 const ProfileScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
-
-  const [selectedOption, setSelectedOption] = useState(null);
-
-  const handleOptionClick = (option: string | React.SetStateAction<null>) => {
-    setSelectedOption(option);
-  };
+  const user = useSelector((state: RootState) => state.user);
 
   const colorMode = {
     backgroundColor: sharedColors.lightMode.backgroundColor,
-    color: 'red',
+    color: 'black',
   };
 
   return (
@@ -35,16 +26,18 @@ const ProfileScreen = () => {
       <Container width="90%" height="100%" justifyContent="flex-start">
         <Image
           // eslint-disable-next-line react-native/no-inline-styles
-          style={{width: 100, height: 100, borderRadius: 50}}
+          style={{
+            width: 100,
+            height: 100,
+            borderRadius: 50,
+            backgroundColor: 'red',
+          }}
           source={{
-            uri: 'https://avatars.githubusercontent.com/u/130109852?v=4',
+            uri: 'https://api.dicebear.com/7.x/micah/svg?seed',
           }}
         />
         <TextView type="mediumBold" style={{color: 'black'}}>
-          Anirban Paul
-        </TextView>
-        <TextView type="smallLight" style={{color: 'black'}}>
-          @anirbanpaul
+          Number :{user.number}
         </TextView>
       </Container>
     </SafeAreaView>

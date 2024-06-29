@@ -1,12 +1,11 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import BottomTab from '../components/BottomTab/BottomTab';
-import Icon from '../assets/icons/icons';
 import {StyleSheet} from 'react-native';
 import ProfileScreen from '../screens/ProfileView/ProfileView.tsx';
 import PayScreen from '../screens/PayView/PayView.tsx';
 import ExpenseScreen from '../screens/ExpenceView/ExpenceScreen.tsx';
 import IncomeScreen from '../screens/Income/IncomeScreen.tsx';
+import {getIcon} from '../functions/functions.tsx';
 
 const Tab = createBottomTabNavigator();
 
@@ -23,13 +22,8 @@ const BottomTabStack = () => {
           component={IncomeScreen}
           options={{
             headerShown: false,
-            tabBarIcon: ({focused}) => (
-              <BottomTab
-                normalIcon={'income'}
-                focusedIcon={'incomefocus'}
-                focused={focused}
-              />
-            ),
+            tabBarIcon: ({focused}) =>
+              focused ? getIcon('incomefocus') : getIcon('income'),
           }}
         />
         <Tab.Screen
@@ -37,13 +31,8 @@ const BottomTabStack = () => {
           component={PayScreen}
           options={{
             headerShown: false,
-            tabBarIcon: ({focused}) => (
-              <BottomTab
-                normalIcon={'expence'}
-                focusedIcon={'expencefocus'}
-                focused={focused}
-              />
-            ),
+            tabBarIcon: ({focused}) =>
+              focused ? getIcon('expencefocus') : getIcon('expence'),
           }}
         />
         <Tab.Screen
@@ -51,13 +40,8 @@ const BottomTabStack = () => {
           component={ExpenseScreen}
           options={{
             headerShown: false,
-            tabBarIcon: ({focused}) => (
-              <BottomTab
-                normalIcon={'transaction'}
-                focusedIcon={'transactionfocus'}
-                focused={focused}
-              />
-            ),
+            tabBarIcon: ({focused}) =>
+              focused ? getIcon('transactionfocus') : getIcon('transaction'),
           }}
         />
         <Tab.Screen
@@ -65,13 +49,8 @@ const BottomTabStack = () => {
           component={ProfileScreen}
           options={{
             headerShown: false,
-            tabBarIcon: ({focused}) => (
-              <BottomTab
-                normalIcon={'profile'}
-                focusedIcon={'profilefocus'}
-                focused={focused}
-              />
-            ),
+            tabBarIcon: ({focused}) =>
+              focused ? getIcon('profilefocus') : getIcon('profile'),
           }}
         />
       </Tab.Navigator>
@@ -82,7 +61,7 @@ const BottomTabStack = () => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    height: 60,
+    height: 50,
   },
 });
 

@@ -1,21 +1,22 @@
 import React, {useState} from 'react';
-import {useColorScheme, StatusBar, Image, View, Text} from 'react-native';
+import {useColorScheme, StatusBar, View, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {sharedColors} from '../../constains/colors';
-import {StyleSheet} from 'react-native';
-import Container from '../../components/Wrapper/Container';
-import TextView from '../../components/TextView/TextView';
-import HorizontalFlatList from '../../components/ListView/ListHorizontal';
 import VerticalFlatList from '../../components/ListView/ListVertical';
-import SpaceBetweenRow from '../../components/Wrapper/SpaceBetweenRow';
 import Row from '../../components/Wrapper/Row';
-import {sharedStyles} from '../../constains/styles';
-import classnames from 'tailwindcss-classnames';
+import TextView from '../../components/TextView/TextView';
 import ButtonView from '../../components/ButtonView/buttonView';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../redux/store';
 
 const ExpenseScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  const [selectedType, setSelectedType] = useState('Cash');
+  const [selectedType, setSelectedType] = useState('cash');
+  const user = useSelector((state: RootState) => state.user);
+  const totalBalance = user.balance.reduce(
+    (sum, category) => sum + category.amount,
+    0,
+  );
 
   const colorMode = {
     backgroundColor: isDarkMode
@@ -26,44 +27,41 @@ const ExpenseScreen = () => {
       : sharedColors.darkMode.textColor,
   };
 
+  const handleTypeChange = (type: string) => {
+    setSelectedType(type);
+  };
+
   return (
-    <SafeAreaView style={[styles.container]}>
+    <SafeAreaView style={styles.container}>
       <StatusBar
         barStyle={isDarkMode ? 'dark-content' : 'light-content'}
         backgroundColor={colorMode.backgroundColor}
       />
 
-      <Row style={{justifyContent: 'center', gap: 5}}>
+      <Row style={styles.row}>
         <ButtonView
-          style={{width: '30%'}}
+          style={styles.button}
           title="Cash"
-          type={selectedType === 'Cash' ? 'black' : 'gray'}
-          onPress={() => setSelectedType('Cash')}
+          type={selectedType === 'cash' ? 'black' : 'gray'}
+          onPress={() => handleTypeChange('cash')}
         />
         <ButtonView
-          style={{width: '30%'}}
+          style={styles.button}
           title="Bank"
           type={selectedType === 'Bank' ? 'black' : 'gray'}
-          onPress={() => setSelectedType('Bank')}
+          onPress={() => handleTypeChange('Bank')}
         />
       </Row>
-      <View
-        style={{
-          color: 'black',
-          backgroundColor: '#ffffff',
-          width: '100%',
-          display: 'flex',
-        }}>
-        <Text
-          style={{
-            fontSize: 24,
-            color: 'black',
-            fontWeight: '700',
-            textAlign: 'center',
-          }}>
-          Total $32000
-        </Text>
-        <VerticalFlatList />
+      <View style={styles.content}>
+        <TextView style={styles.totalText}>Total ${totalBalance}</TextView>
+        {selectedType === 'Bank' && (
+          <TextView style={styles.bankMessage}>
+            Please connect your bank account to view transactions.
+          </TextView>
+        )}
+        {selectedType == 'cash' && (
+          <VerticalFlatList props={user.transactions} />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -75,26 +73,29 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     padding: 10,
-    color: 'black',
     backgroundColor: '#ffffff',
   },
-  contentContainer: {
-    alignItems: 'center',
+  row: {
     justifyContent: 'center',
+    gap: 5,
   },
-  image: {
-    width: 120,
-    height: 120,
-    borderRadius: 20,
-    marginRight: 10,
+  button: {
+    width: '30%',
   },
-  flatList: {
-    flex: 1,
+  content: {
     width: '100%',
-    backgroundColor: 'red',
   },
-  title: {
-    marginTop: 10,
+  totalText: {
+    fontSize: 30,
+    color: 'black',
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  bankMessage: {
+    marginVertical: 10,
+    fontSize: 16,
+    color: 'gray',
+    textAlign: 'center',
   },
 });
 

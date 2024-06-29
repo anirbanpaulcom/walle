@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
+import {ViewProps} from 'react-native-svg/lib/typescript/fabric/utils';
 
 type JustifyContentType =
   | 'center'
@@ -16,7 +17,7 @@ type AlignItemsType =
   | 'stretch'
   | 'baseline';
 
-export interface RowProps {
+export interface RowProps extends ViewProps {
   children: React.ReactNode;
   alignItems?: AlignItemsType;
   justifyContent?: JustifyContentType;
@@ -24,22 +25,24 @@ export interface RowProps {
   width?: number | string;
   style?: object;
   backgroundColor?: string;
+  gap?: number;
 }
 
 const Row = ({
   children,
   backgroundColor,
   style,
-  justifyContent = 'flex-start',
+  justifyContent = 'center',
   alignItems = 'center',
   width = '100%',
   height = 'auto',
+  gap = 5,
 }: RowProps) => {
   return (
     <View
       style={[
         styles.row,
-        {backgroundColor, justifyContent, alignItems, width, height},
+        {backgroundColor, justifyContent, alignItems, width, height, gap},
         style,
       ]}>
       {children}
